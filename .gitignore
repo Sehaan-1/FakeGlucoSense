@@ -1,0 +1,31 @@
+# Gradle / build outputs
+.gradle/
+build/
+**/build/
+.kotlin/
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+.externalNativeBuild/
+.cxx/
+
+# Signing and secrets
+*.jks
+*.keystore
+keystore.properties
+.env
+*.pem
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.pio/
+esp32/.pio/

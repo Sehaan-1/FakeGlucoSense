@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window shell only. All screen styling comes from the Compose MaterialTheme. -->
+    <style name="Theme.FakeGlucoSense" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

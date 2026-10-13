@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A drop of glucose with a trend line across it. -->
+    <path
+        android:fillColor="#5EE0C4"
+        android:pathData="M54,26 C54,26 36,48 36,62 C36,72 44,80 54,80 C64,80 72,72 72,62 C72,48 54,26 54,26 Z" />
+    <path
+        android:strokeColor="#0F3D3E"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M42,62 L50,58 L56,64 L66,54" />
+</vector>

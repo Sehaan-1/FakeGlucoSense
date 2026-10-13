@@ -1,0 +1,141 @@
+# CI for FakeGlucoSense. See AGENTS.md section 5 (build, test, and run) and ADR-0012 (build tooling).
+#
+# Three jobs:
+#   jvm      : core and simulator (pure JVM). Runs without the Android SDK.
+#   android  : app and sensor-app. Uses the SDK preinstalled on GitHub's ubuntu-latest image.
+#   firmware : esp32/ (PlatformIO, NimBLE). A green build is the source of truth for the firmware.
+# A green "android" job is the source of truth for Android compilation (AGENTS.md section 5).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jvm:
+    name: core + simulator (JVM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Test core and simulator
+        run: ./gradlew --no-daemon :core:test :simulator:test
+
+      - name: Upload JVM test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-test-reports
+          path: |
+            core/build/reports/tests/
+            simulator/build/reports/tests/
+          if-no-files-found: ignore
+
+  android:
+    name: app + sensor-app (Android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and unit-test Android modules
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --continue \
+            :app:assembleDebug :app:testDebugUnitTest \
+            :sensor-app:assembleDebug :sensor-app:testDebugUnitTest \
+            2>&1 | tee gradle-android.log
+
+      - name: Surface failures as annotations
+        if: failure()
+        shell: bash
+        run: python3 .github/scripts/annotate_failures.py gradle-android.log
+
+      - name: Upload debug APKs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            sensor-app/build/outputs/apk/debug/*.apk
+          if-no-files-found: ignore
+
+      - name: Upload Android build log and test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-and-tests
+          path: |
+            gradle-android.log
+            app/build/reports/tests/
+            sensor-app/build/reports/tests/
+            app/build/test-results/
+            sensor-app/build/test-results/
+          if-no-files-found: ignore
+
+  firmware:
+    name: esp32 firmware (PlatformIO)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: esp32
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: platformio-${{ hashFiles('esp32/platformio.ini') }}
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      - name: Build firmware
+        id: build
+        continue-on-error: true
+        run: pio run 2>&1 | tee firmware-build.log; test ${PIPESTATUS[0]} -eq 0
+
+      - name: Surface compile errors as annotations
+        if: steps.build.outcome == 'failure'
+        run: |
+          grep -E "(fatal )?error[: ]|error:" firmware-build.log | sed "s|${PWD}/||g" | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          exit 1
+
+      - name: Upload firmware build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-build-log
+          path: esp32/firmware-build.log
+          if-no-files-found: ignore

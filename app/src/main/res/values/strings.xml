@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FakeGlucoSense</string>
+    <string name="disclaimer_simulated">Simulated data for learning. Not a medical device. Never use it for treatment decisions.</string>
+
+    <string name="channel_alerts_urgent">Urgent glucose alerts</string>
+    <string name="channel_alerts_urgent_desc">Urgent low and high glucose. Sounds even in quiet hours where allowed.</string>
+    <string name="channel_alerts">Glucose alerts</string>
+    <string name="channel_alerts_desc">Low, high, and rapid change alerts.</string>
+    <string name="channel_monitoring">Monitoring</string>
+    <string name="channel_monitoring_desc">Ongoing status while the monitor is connected.</string>
+    <string name="channel_stale">Data gaps</string>
+    <string name="channel_stale_desc">Alerts when no readings have arrived for a while.</string>
+
+    <string name="notif_monitoring_title">Glucose monitoring</string>
+    <string name="notif_monitoring_waiting">Waiting for the first reading</string>
+    <string name="notif_stop_action">Stop</string>
+    <string name="notif_idle_text">Choose a sensor in Settings to start receiving readings</string>
+    <string name="notif_reading_format">%1$d mg/dL (%2$.1f mmol/L)</string>
+    <string name="alert_urgent_low_title">Urgent low glucose</string>
+    <string name="alert_low_title">Low glucose</string>
+    <string name="alert_high_title">High glucose</string>
+    <string name="alert_urgent_high_title">Urgent high glucose</string>
+    <string name="alert_rapid_drop_title">Glucose falling fast</string>
+    <string name="alert_rapid_rise_title">Glucose rising fast</string>
+    <string name="notif_stale_title">No glucose data</string>
+    <string name="notif_stale_text">No readings for %1$d minutes. Check the sensor or simulator connection.</string>
+</resources>

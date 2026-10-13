@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FakeGlucoSense Sensor</string>
+    <string name="disclaimer_simulated">Simulated data for learning. Not a medical device. Never use it for treatment decisions.</string>
+    <string name="channel_sensor">Simulated sensor</string>
+    <string name="channel_sensor_desc">Shown while the simulated sensor is advertising or connected.</string>
+    <string name="notif_sensor_title">Simulated CGM sensor</string>
+    <string name="notif_stop_action">Stop</string>
+</resources>
